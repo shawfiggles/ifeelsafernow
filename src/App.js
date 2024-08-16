@@ -247,7 +247,8 @@ const SafeTalkApp = () => {
                     </motion.div>
                   )}
                 </motion.div>
-              ))}
+              ))
+            )}
             </motion.div>
           </AnimatePresence>
         </div>
