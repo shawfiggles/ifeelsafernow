@@ -68,7 +68,8 @@ const ProgressBar = ({ progress }) => {
 
 const SafeTalkApp = () => {
   const [activeSection, setActiveSection] = useState(sections[0].id);
-  const [showAnswers, setShowAnswers] = useState(false);
+  const [showAnswers, setShowAnswers] = useState(true);
+  const [visibleAnswers, setVisibleAnswers] = useState({});
   const [scrollProgress, setScrollProgress] = useState(0);
   const [darkMode, setDarkMode] = useState(() => {
     const savedMode = localStorage.getItem('darkMode');
@@ -186,7 +187,41 @@ const SafeTalkApp = () => {
               transition={{ duration: 0.5 }}
             >
               <h2 className={`text-xl font-bold mb-4 ${darkMode ? 'text-white' : currentSection.color}`}>{currentSection.title}</h2>
-              {currentSection.questions.map((question, index) => (
+              {currentSection.id === 'easy' ? (
+                currentSection.questions.map((category, categoryIndex) => (
+                  <div key={categoryIndex}>
+                    <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : currentSection.color}`}>{category.category}</h3>
+                    {category.questions.map((question, index) => (
+                      <motion.div 
+                        key={index}
+                        className="mb-6"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.5 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                      >
+                        <div 
+                          className="flex justify-between items-start mb-2 cursor-pointer"
+                          onClick={() => setVisibleAnswers(prev => ({ ...prev, [`${categoryIndex}-${index}`]: !prev[`${categoryIndex}-${index}`] }))}
+                        >
+                          <p className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>{question.q}</p>
+                        </div>
+                        {(showAnswers || visibleAnswers[`${categoryIndex}-${index}`]) && (
+                          <motion.div 
+                            className={`${darkMode ? 'bg-gray-600' : 'bg-gray-100'} p-3 rounded-md shadow-inner`}
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            {formatAnswer(question.a)}
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                ))
+              ) : (
+                currentSection.questions.map((question, index) => (
                 <motion.div 
                   key={index}
                   className="mb-6"
@@ -195,10 +230,13 @@ const SafeTalkApp = () => {
                   viewport={{ once: true, amount: 0.5 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <div className="flex justify-between items-start mb-2">
+                  <div 
+                    className="flex justify-between items-start mb-2 cursor-pointer"
+                    onClick={() => setVisibleAnswers(prev => ({ ...prev, [index]: !prev[index] }))}
+                  >
                     <p className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>{question.q}</p>
                   </div>
-                  {showAnswers && (
+                  {(showAnswers || visibleAnswers[index]) && (
                     <motion.div 
                       className={`${darkMode ? 'bg-gray-600' : 'bg-gray-100'} p-3 rounded-md shadow-inner`}
                       initial={{ opacity: 0, height: 0 }}
