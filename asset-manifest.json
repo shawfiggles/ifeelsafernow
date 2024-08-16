@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/ifeelsafernow/static/css/main.bee791b8.css",
+    "main.js": "/ifeelsafernow/static/js/main.c896a7af.js",
+    "static/js/453.32dad7a1.chunk.js": "/ifeelsafernow/static/js/453.32dad7a1.chunk.js",
+    "index.html": "/ifeelsafernow/index.html",
+    "main.bee791b8.css.map": "/ifeelsafernow/static/css/main.bee791b8.css.map",
+    "main.c896a7af.js.map": "/ifeelsafernow/static/js/main.c896a7af.js.map",
+    "453.32dad7a1.chunk.js.map": "/ifeelsafernow/static/js/453.32dad7a1.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.bee791b8.css",
+    "static/js/main.c896a7af.js"
+  ]
+}
