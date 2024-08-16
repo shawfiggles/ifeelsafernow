@@ -44,35 +44,15 @@ const sections = [
 ];
 
 const ProgressBar = ({ progress }) => {
-  const steps = 4; // Number of steps in the progress bar
-  const filledSteps = Math.floor(progress * steps);
-
   return (
-    <div className="fixed top-0 left-0 right-0 p-2 bg-white shadow-md z-20">
-      <div className="flex justify-between mb-1">
-        {[...Array(steps)].map((_, index) => (
-          <div key={index} className="text-xs font-semibold">
-            Step {index + 1}
-          </div>
-        ))}
-      </div>
-      <div className="flex h-2 bg-gray-200 rounded-full overflow-hidden">
-        {[...Array(steps)].map((_, index) => (
-          <motion.div
-            key={index}
-            className="h-full"
-            style={{
-              background: index < filledSteps ? 
-                `linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%)` : 
-                (index === filledSteps ? `linear-gradient(90deg, #3B82F6 0%, #8B5CF6 ${progress * 100}%, #E5E7EB ${progress * 100}%)` : '#E5E7EB'),
-              flexGrow: 1
-            }}
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          />
-        ))}
-      </div>
+    <div className="h-1 bg-gray-200">
+      <motion.div
+        className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+        style={{ width: `${progress * 100}%` }}
+        initial={{ width: 0 }}
+        animate={{ width: `${progress * 100}%` }}
+        transition={{ type: 'spring', stiffness: 50, damping: 20 }}
+      />
     </div>
   );
 };
@@ -105,6 +85,13 @@ const SafeTalkApp = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // Scroll to top when changing categories
+    if (containerRef.current) {
+      containerRef.current.scrollTo(0, 0);
+    }
+  }, [activeSection]);
+
   const currentSection = sections.find(s => s.id === activeSection);
 
   const formatAnswer = (answer) => {
@@ -115,38 +102,40 @@ const SafeTalkApp = () => {
 
   return (
     <div className="h-screen overflow-hidden">
-      <ProgressBar progress={scrollProgress} />
+      <div className="fixed top-0 left-0 right-0 z-20">
+        <ProgressBar progress={scrollProgress} />
+        <motion.div 
+          className="flex justify-between bg-white shadow-md p-2"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {sections.map((section) => {
+            const Icon = section.icon;
+            return (
+              <motion.button
+                key={section.id}
+                className={`p-2 ${section.color} ${section.bgColor} ${activeSection === section.id ? 'font-bold ring-2 ring-offset-2 ring-gray-400' : ''} flex flex-col items-center rounded-lg transition-all duration-200`}
+                onClick={() => setActiveSection(section.id)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Icon size={20} />
+                <span className="mt-1 text-xs">{section.title}</span>
+              </motion.button>
+            );
+          })}
+        </motion.div>
+      </div>
+      
       <div 
-        className="h-full overflow-y-auto pt-16 pb-24 px-4 bg-gray-100"
+        className="h-full overflow-y-auto pt-20 pb-24 px-4 bg-gray-100"
         ref={containerRef}
       >
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
           <h1 className="text-2xl font-bold mb-2 text-center text-gray-800">Safe Talk Interactive Learning</h1>
           <p className="text-center text-gray-600 mb-6">August Edition Version 1 - 15 August 2024</p>
           
-          <motion.div 
-            className="flex justify-between mb-6 sticky top-0 bg-white p-2 z-10"
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {sections.map((section) => {
-              const Icon = section.icon;
-              return (
-                <motion.button
-                  key={section.id}
-                  className={`p-2 ${section.color} ${section.bgColor} ${activeSection === section.id ? 'font-bold ring-2 ring-offset-2 ring-gray-400' : ''} flex flex-col items-center rounded-lg transition-all duration-200`}
-                  onClick={() => setActiveSection(section.id)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Icon size={20} />
-                  <span className="mt-1 text-xs">{section.title}</span>
-                </motion.button>
-              );
-            })}
-          </motion.div>
-
           <motion.div 
             className="mb-4"
             initial={{ opacity: 0 }}
