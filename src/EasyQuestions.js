@@ -1,16 +1,31 @@
 const EasyQuestions = [
-  { q: "🎛️ Where is the Cabin System Control Panel (CSCP) located?", a: "At **L1 station** above **Purser jump seat**" },
-  { q: "🔑 What is the Flight Deck normal access code?", a: "**1** then **ENT**" },
-  { q: "🪓 State the pre-flight check of the Crash Axe.", a: "**Correct quantity** and **securely stowed**" },
-  { q: "🔑 Where is the upper avionics compartment door key stowed?", a: "In the **Flight Deck**" },
-  { q: "🔔 What is the audio indication in the cabin when an Emergency call is initiated?", a: "**3 Hi-Lo chimes**" },
-  { q: "🚑 Who is responsible for performing the AED pre-flight check?", a: "• B777-200: **R4**\n• B777-300: **R5**\n• A380: **ML5**" },
-  { q: "🎨 What is the colour of the new Zoll AED 3® case?", a: "**Bright green**" },
-  { q: "💓 What is the normal pulse rate for children?", a: "**80-100 beats/minute**" },
-  { q: "🔑 Whose permission must be sought before opening the SEMK?", a: "**Purser** (or deputy when applicable)" },
-  { q: "🧳 What is the location of the Restraint Kit?", a: "Under the **Purser jump seat**" },
-  { q: "🚨 What is the minimum number of Cabin Crew required for a restraint?", a: "**2**" },
-  { q: "4️⃣ State the 4 Ds.", a: "• **Delay**\n• **Distract**\n• **Dilute**\n• **Deny**" },
+  // B777 Questions
+  { q: "🎛️ Where is the Cabin System Control Panel (CSCP) located?", a: "L1 station above Purser jump seat" },
+  { q: "🔑 What is the Flight Deck normal access code?", a: "1 then ENT" },
+  { q: "🪓 State the pre-flight check of the Crash Axe.", a: "Correct quantity and securely stowed" },
+  { q: "💨 True or False? Change oxygen bottle at 500 PSI.", a: "True" },
+  { q: "🔇 How to silence a false smoke detector alarm?", a: "Press flashing amber lavatory call light" },
+
+  // A380 Questions
+  { q: "🔑 Where is the upper avionics compartment door key stowed?", a: "In the Flight Deck" },
+  { q: "🔔 Audio indication for an Emergency call?", a: "3 Hi-Lo chimes" },
+  { q: "👶 True or False? Baby bassinets can be placed on floor.", a: "False" },
+  { q: "🔢 What's the emergency access code to Flight Deck?", a: "3 4 5 and #" },
+  { q: "🌪️ When to unlock lavatories after light turbulence?", a: "When seat belt sign is switched off" },
+
+  // Aviation Security Questions
+  { q: "🚪 When shall Cabin Crew control aircraft access?", a: "From arrival onboard until disembarkation" },
+  { q: "👨‍✈️ Who ensures Cabin Crew start security search?", a: "Cabin Supervisor" },
+  { q: "🦹 What reaction is defined as antagonizing hijackers?", a: "Hero Reaction" },
+  { q: "🧳 Where is the Restraint Kit located?", a: "Under the Purser jump seat" },
+  { q: "🚨 Minimum number of Cabin Crew for restraint?", a: "2" },
+
+  // GMT Questions
+  { q: "🚑 Who performs AED pre-flight check on B777-300?", a: "R5" },
+  { q: "🎨 Color of the new Zoll AED 3® case?", a: "Bright green" },
+  { q: "💓 Normal pulse rate for children?", a: "80-100 beats/minute" },
+  { q: "🔑 Whose permission needed to open SEMK?", a: "Purser (or deputy when applicable)" },
+  { q: "💊 True or False? Crew opening controlled medication completes form.", a: "True" },
 ];
 
 export default EasyQuestions;

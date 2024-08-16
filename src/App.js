@@ -11,14 +11,6 @@ import EasyQuestions from './EasyQuestions';
 
 const sections = [
   { 
-    id: 'easy', 
-    title: 'Easy', 
-    icon: Star,
-    color: 'text-yellow-500',
-    bgColor: 'bg-yellow-100',
-    questions: EasyQuestions
-  },
-  { 
     id: 'b777', 
     title: 'B777', 
     icon: Plane,
@@ -50,6 +42,14 @@ const sections = [
     bgColor: 'bg-purple-100',
     questions: GMTQuestions
   },
+  { 
+    id: 'easy', 
+    title: 'Easy', 
+    icon: Star,
+    color: 'text-yellow-500',
+    bgColor: 'bg-yellow-100',
+    questions: EasyQuestions
+  },
 ];
 
 const ProgressBar = ({ progress }) => {
@@ -70,7 +70,10 @@ const SafeTalkApp = () => {
   const [activeSection, setActiveSection] = useState(sections[0].id);
   const [showAnswers, setShowAnswers] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedMode = localStorage.getItem('darkMode');
+    return savedMode ? JSON.parse(savedMode) : false;
+  });
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -103,17 +106,8 @@ const SafeTalkApp = () => {
   }, [activeSection]);
 
   useEffect(() => {
-    const checkDarkMode = () => {
-      const now = new Date();
-      const hours = now.getHours();
-      setDarkMode(hours < 6 || hours >= 18);
-    };
-
-    checkDarkMode();
-    const interval = setInterval(checkDarkMode, 60000); // Check every minute
-
-    return () => clearInterval(interval);
-  }, []);
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
 
   const currentSection = sections.find(s => s.id === activeSection);
 
