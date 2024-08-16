@@ -1,7 +1,7 @@
 const A380Questions = [
-    { q: "🪓 State the pre-flight check of the Crash Axe.", a: "**Correct quantity** and **securely stowed** 🔢✅🔒" },
-    { q: "🛝 Which A380 doors are equipped with fuselage integrated slide rafts?", a: "**All Upper Deck doors** 🚪🛶🚪🛶" },
-    { q: "🚨 What does the cabin door warning system consist of?", a: "• **Slide Armed light** 💡🟡\n• **Cabin Pressure light** 💡🔴" },
+    { q: "🪓 State the pre-flight check of the Crash Axe.", a: "<span style=\"color: blue;\">**Correct quantity**</span> and <span style=\"color: green;\">**securely stowed**</span> 🔢✅🔒" },
+    { q: "🛝 Which A380 doors are equipped with fuselage integrated slide rafts?", a: "<span style=\"color: purple;\">**All Upper Deck doors**</span> 🚪🛶🚪🛶" },
+    { q: "🚨 What does the cabin door warning system consist of?", a: "• <span style=\"color: orange;\">**Slide Armed light**</span> 💡🟡\n• <span style=\"color: red;\">**Cabin Pressure light**</span> 💡🔴" },
     { q: "🚪 Which doors will UR2 Cabin Crew demonstrate in case of an emergency landing?", a: "**U1 & U2 doors** 1️⃣🚪2️⃣🚪" },
     { q: "🎈 During Cabin Door Emergency Operation, what should Cabin Crew do if the slide raft/escape slide has not inflated automatically?", a: "Press the <span style=\"color: red;\">**red Manual Inflation Push button (MIP)**</span> 🔴👆🛶" },
     { q: "🚫 True or False? Passengers who may hinder other passengers during an evacuation or who might impede the crew in carrying out their duties, shall not be allocated seats which permit direct access to emergency exits.", a: "**True** ✅🚷" },
