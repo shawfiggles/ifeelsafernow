@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Plane, Shield, Stethoscope, ChevronRight, ChevronLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plane, Shield, Stethoscope } from 'lucide-react';
 
 // Import question sets (assuming they're in separate files)
 import B777Questions from './B777Questions';
@@ -44,24 +45,19 @@ const sections = [
 
 const SafeTalkApp = () => {
   const [activeSection, setActiveSection] = useState(sections[0].id);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
+  const [showAnswers, setShowAnswers] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const currentSection = sections.find(s => s.id === activeSection);
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < currentSection.questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setShowAnswer(false);
-    }
-  };
-
-  const handlePrevQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setShowAnswer(false);
-    }
-  };
 
   const formatAnswer = (answer) => {
     return answer.split('\n').map((line, index) => (
@@ -70,61 +66,83 @@ const SafeTalkApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-3xl font-bold mb-2 text-center text-gray-800">Safe Talk Interactive Learning</h1>
+    <div className="min-h-screen bg-gray-100 p-4 pb-24">
+      <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 className="text-2xl font-bold mb-2 text-center text-gray-800">Safe Talk Interactive Learning</h1>
         <p className="text-center text-gray-600 mb-6">August Edition Version 1 - 15 August 2024</p>
-        <div className="flex justify-between mb-6">
+        
+        <motion.div 
+          className={`flex justify-between mb-6 ${isScrolled ? 'fixed top-0 left-0 right-0 bg-white shadow-md p-4 z-10' : ''}`}
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           {sections.map((section) => {
             const Icon = section.icon;
             return (
-              <button
+              <motion.button
                 key={section.id}
-                className={`p-4 ${section.color} ${section.bgColor} ${activeSection === section.id ? 'font-bold ring-2 ring-offset-2 ring-gray-400' : ''} flex flex-col items-center rounded-lg transition-all duration-200 hover:shadow-md`}
-                onClick={() => {
-                  setActiveSection(section.id);
-                  setCurrentQuestionIndex(0);
-                  setShowAnswer(false);
-                }}
+                className={`p-2 ${section.color} ${section.bgColor} ${activeSection === section.id ? 'font-bold ring-2 ring-offset-2 ring-gray-400' : ''} flex flex-col items-center rounded-lg transition-all duration-200`}
+                onClick={() => setActiveSection(section.id)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Icon size={24} />
-                <span className="mt-2">{section.title}</span>
-              </button>
+                <Icon size={20} />
+                <span className="mt-1 text-xs">{section.title}</span>
+              </motion.button>
             );
           })}
-        </div>
-        <div className={`border p-6 rounded-lg ${currentSection.bgColor}`}>
-          <h2 className={`text-2xl font-bold mb-4 ${currentSection.color}`}>{currentSection.title}</h2>
-          <p className="mb-2 text-gray-600">Question {currentQuestionIndex + 1} of {currentSection.questions.length}</p>
-          <p className="text-lg font-semibold mb-4 text-gray-800">{currentSection.questions[currentQuestionIndex].q}</p>
-          {showAnswer && (
-            <div className="bg-white p-4 rounded-md mb-4 shadow-inner">
-              {formatAnswer(currentSection.questions[currentQuestionIndex].a)}
-            </div>
-          )}
-          <div className="flex justify-between mt-6">
-            <button
-              className="px-2 py-1 text-sm bg-gray-200 text-gray-800 rounded-full flex items-center hover:bg-gray-300 transition-colors duration-200"
-              onClick={handlePrevQuestion}
-              disabled={currentQuestionIndex === 0}
-            >
-              <ChevronLeft size={12} className="mr-1" /> Previous
-            </button>
-            <button
-              className={`px-2 py-1 text-sm ${showAnswer ? 'bg-yellow-500' : 'bg-blue-500'} text-white rounded-full hover:opacity-90 transition-colors duration-200`}
-              onClick={() => setShowAnswer(!showAnswer)}
-            >
-              {showAnswer ? 'Hide Answer' : 'Show Answer'}
-            </button>
-            <button
-              className="px-2 py-1 text-sm bg-gray-200 text-gray-800 rounded-full flex items-center hover:bg-gray-300 transition-colors duration-200"
-              onClick={handleNextQuestion}
-              disabled={currentQuestionIndex === currentSection.questions.length - 1}
-            >
-              Next <ChevronRight size={12} className="ml-1" />
-            </button>
-          </div>
-        </div>
+        </motion.div>
+
+        <motion.div 
+          className="mb-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <label className="flex items-center justify-center">
+            <input
+              type="checkbox"
+              checked={showAnswers}
+              onChange={() => setShowAnswers(!showAnswers)}
+              className="mr-2"
+            />
+            Show Answers
+          </label>
+        </motion.div>
+
+        <motion.div 
+          className={`border p-4 rounded-lg ${currentSection.bgColor}`}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className={`text-xl font-bold mb-4 ${currentSection.color}`}>{currentSection.title}</h2>
+          <AnimatePresence>
+            {currentSection.questions.map((question, index) => (
+              <motion.div 
+                key={index}
+                className="mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <p className="text-lg font-semibold mb-2">{question.q}</p>
+                {showAnswers && (
+                  <motion.div 
+                    className="bg-white p-3 rounded-md shadow-inner"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {formatAnswer(question.a)}
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );
