@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plane, Shield, Stethoscope } from 'lucide-react';
+import { Plane, Shield, Stethoscope, Search, Moon, Sun, Star } from 'lucide-react';
 
 // Import question sets (assuming they're in separate files)
 import B777Questions from './B777Questions';
@@ -61,6 +61,9 @@ const SafeTalkApp = () => {
   const [activeSection, setActiveSection] = useState(sections[0].id);
   const [showAnswers, setShowAnswers] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
+  const [favorites, setFavorites] = useState([]);
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -102,14 +105,24 @@ const SafeTalkApp = () => {
 
   return (
     <div className="h-screen overflow-hidden">
-      <div className="fixed top-0 left-0 right-0 z-20">
+      <div className={`fixed top-0 left-0 right-0 z-20 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
         <ProgressBar progress={scrollProgress} />
         <motion.div 
-          className="flex justify-between bg-white shadow-md p-2"
+          className={`flex justify-between ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-md p-2`}
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
+          <div className="flex items-center">
+            <input
+              type="text"
+              placeholder="Search questions..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`mr-2 p-1 rounded ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
+            />
+            <Search size={20} className={darkMode ? 'text-white' : 'text-gray-600'} />
+          </div>
           {sections.map((section) => {
             const Icon = section.icon;
             return (
@@ -125,24 +138,30 @@ const SafeTalkApp = () => {
               </motion.button>
             );
           })}
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`p-2 rounded-full ${darkMode ? 'bg-yellow-400' : 'bg-gray-800'}`}
+          >
+            {darkMode ? <Sun size={20} color="black" /> : <Moon size={20} color="white" />}
+          </button>
         </motion.div>
       </div>
       
       <div 
-        className="h-full overflow-y-auto pt-20 pb-24 px-4 bg-gray-100"
+        className={`h-full overflow-y-auto pt-20 pb-24 px-4 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}
         ref={containerRef}
       >
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold mb-2 text-center text-gray-800">Safe Talk Interactive Learning</h1>
-          <p className="text-center text-gray-600 mb-6">August Edition Version 1 - 15 August 2024</p>
+        <div className={`max-w-md mx-auto ${darkMode ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow-lg p-6`}>
+          <h1 className={`text-2xl font-bold mb-2 text-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>Safe Talk Interactive Learning</h1>
+          <p className={`text-center ${darkMode ? 'text-gray-300' : 'text-gray-600'} mb-6`}>August Edition Version 1 - 15 August 2024</p>
           
           <motion.div 
-            className="mb-4"
+            className="mb-4 flex justify-center items-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <label className="flex items-center justify-center">
+            <label className="flex items-center mr-4">
               <input
                 type="checkbox"
                 checked={showAnswers}
@@ -156,14 +175,17 @@ const SafeTalkApp = () => {
           <AnimatePresence mode="wait">
             <motion.div 
               key={activeSection}
-              className={`border p-4 rounded-lg ${currentSection.bgColor}`}
+              className={`border p-4 rounded-lg ${darkMode ? 'bg-gray-700' : currentSection.bgColor}`}
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -50 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className={`text-xl font-bold mb-4 ${currentSection.color}`}>{currentSection.title}</h2>
-              {currentSection.questions.map((question, index) => (
+              <h2 className={`text-xl font-bold mb-4 ${darkMode ? 'text-white' : currentSection.color}`}>{currentSection.title}</h2>
+              {currentSection.questions.filter(question => 
+                question.q.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                question.a.toLowerCase().includes(searchTerm.toLowerCase())
+              ).map((question, index) => (
                 <motion.div 
                   key={index}
                   className="mb-6"
@@ -172,10 +194,23 @@ const SafeTalkApp = () => {
                   viewport={{ once: true, amount: 0.5 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <p className="text-lg font-semibold mb-2">{question.q}</p>
+                  <div className="flex justify-between items-start mb-2">
+                    <p className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>{question.q}</p>
+                    <button
+                      onClick={() => {
+                        const newFavorites = favorites.includes(question.q)
+                          ? favorites.filter(fav => fav !== question.q)
+                          : [...favorites, question.q];
+                        setFavorites(newFavorites);
+                      }}
+                      className={`ml-2 ${favorites.includes(question.q) ? 'text-yellow-500' : 'text-gray-400'}`}
+                    >
+                      <Star size={20} />
+                    </button>
+                  </div>
                   {showAnswers && (
                     <motion.div 
-                      className="bg-white p-3 rounded-md shadow-inner"
+                      className={`${darkMode ? 'bg-gray-700' : 'bg-white'} p-3 rounded-md shadow-inner`}
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       transition={{ duration: 0.3 }}
