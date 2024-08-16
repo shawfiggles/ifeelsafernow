@@ -1,14 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plane, Shield, Stethoscope, Search, Moon, Sun, Star } from 'lucide-react';
+import { Plane, Shield, Stethoscope, Moon, Sun, Star } from 'lucide-react';
 
-// Import question sets (assuming they're in separate files)
+// Import question sets
 import B777Questions from './B777Questions';
 import A380Questions from './A380Questions';
 import AviationSecurityQuestions from './AviationSecurityQuestions';
 import GMTQuestions from './GMTQuestions';
+import EasyQuestions from './EasyQuestions';
 
 const sections = [
+  { 
+    id: 'easy', 
+    title: 'Easy', 
+    icon: Star,
+    color: 'text-yellow-500',
+    bgColor: 'bg-yellow-100',
+    questions: EasyQuestions
+  },
   { 
     id: 'b777', 
     title: 'B777', 
@@ -61,9 +70,7 @@ const SafeTalkApp = () => {
   const [activeSection, setActiveSection] = useState(sections[0].id);
   const [showAnswers, setShowAnswers] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
   const [darkMode, setDarkMode] = useState(false);
-  const [favorites, setFavorites] = useState([]);
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -95,6 +102,19 @@ const SafeTalkApp = () => {
     }
   }, [activeSection]);
 
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const now = new Date();
+      const hours = now.getHours();
+      setDarkMode(hours < 6 || hours >= 18);
+    };
+
+    checkDarkMode();
+    const interval = setInterval(checkDarkMode, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
   const currentSection = sections.find(s => s.id === activeSection);
 
   const formatAnswer = (answer) => {
@@ -113,16 +133,6 @@ const SafeTalkApp = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="flex items-center">
-            <input
-              type="text"
-              placeholder="Search questions..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`mr-2 p-1 rounded ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
-            />
-            <Search size={20} className={darkMode ? 'text-white' : 'text-gray-600'} />
-          </div>
           {sections.map((section) => {
             const Icon = section.icon;
             return (
@@ -182,10 +192,7 @@ const SafeTalkApp = () => {
               transition={{ duration: 0.5 }}
             >
               <h2 className={`text-xl font-bold mb-4 ${darkMode ? 'text-white' : currentSection.color}`}>{currentSection.title}</h2>
-              {currentSection.questions.filter(question => 
-                question.q.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                question.a.toLowerCase().includes(searchTerm.toLowerCase())
-              ).map((question, index) => (
+              {currentSection.questions.map((question, index) => (
                 <motion.div 
                   key={index}
                   className="mb-6"
@@ -196,21 +203,10 @@ const SafeTalkApp = () => {
                 >
                   <div className="flex justify-between items-start mb-2">
                     <p className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>{question.q}</p>
-                    <button
-                      onClick={() => {
-                        const newFavorites = favorites.includes(question.q)
-                          ? favorites.filter(fav => fav !== question.q)
-                          : [...favorites, question.q];
-                        setFavorites(newFavorites);
-                      }}
-                      className={`ml-2 ${favorites.includes(question.q) ? 'text-yellow-500' : 'text-gray-400'}`}
-                    >
-                      <Star size={20} />
-                    </button>
                   </div>
                   {showAnswers && (
                     <motion.div 
-                      className={`${darkMode ? 'bg-gray-700' : 'bg-white'} p-3 rounded-md shadow-inner`}
+                      className={`${darkMode ? 'bg-gray-600' : 'bg-gray-100'} p-3 rounded-md shadow-inner`}
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       transition={{ duration: 0.3 }}
