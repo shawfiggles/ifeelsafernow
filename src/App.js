@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { Plane, Shield, Stethoscope } from 'lucide-react';
 
 // Import question sets (assuming they're in separate files)
@@ -47,6 +47,13 @@ const SafeTalkApp = () => {
   const [activeSection, setActiveSection] = useState(sections[0].id);
   const [showAnswers, setShowAnswers] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({ container: containerRef });
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,13 +73,17 @@ const SafeTalkApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 pb-24">
+    <div className="min-h-screen bg-gray-100 p-4 pb-24" ref={containerRef}>
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 to-purple-500"
+        style={{ scaleX, transformOrigin: "0%" }}
+      />
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
         <h1 className="text-2xl font-bold mb-2 text-center text-gray-800">Safe Talk Interactive Learning</h1>
         <p className="text-center text-gray-600 mb-6">August Edition Version 1 - 15 August 2024</p>
         
         <motion.div 
-          className={`flex justify-between mb-6 ${isScrolled ? 'fixed top-0 left-0 right-0 bg-white shadow-md p-4 z-10' : ''}`}
+          className={`flex justify-between mb-6 ${isScrolled ? 'fixed top-2 left-0 right-0 bg-white shadow-md p-4 z-10' : ''}`}
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -111,22 +122,24 @@ const SafeTalkApp = () => {
           </label>
         </motion.div>
 
-        <motion.div 
-          className={`border p-4 rounded-lg ${currentSection.bgColor}`}
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className={`text-xl font-bold mb-4 ${currentSection.color}`}>{currentSection.title}</h2>
-          <AnimatePresence>
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={activeSection}
+            className={`border p-4 rounded-lg ${currentSection.bgColor}`}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className={`text-xl font-bold mb-4 ${currentSection.color}`}>{currentSection.title}</h2>
             {currentSection.questions.map((question, index) => (
               <motion.div 
                 key={index}
                 className="mb-6"
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <p className="text-lg font-semibold mb-2">{question.q}</p>
                 {showAnswers && (
@@ -141,8 +154,8 @@ const SafeTalkApp = () => {
                 )}
               </motion.div>
             ))}
-          </AnimatePresence>
-        </motion.div>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
